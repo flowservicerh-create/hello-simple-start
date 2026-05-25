@@ -77,7 +77,7 @@ const App = () => (
   <ThemeProvider>
     <QueryClientProvider client={queryClient}>
       <IonApp>
-        <Router>
+        <Router basename={import.meta.env.BASE_URL.replace(/\/$/, '')}>
           <Bootstrapper />
           <Suspense fallback={<RouteFallback />}>
             <Routes>
