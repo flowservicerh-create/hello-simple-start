@@ -70,7 +70,9 @@ export const en = {
     itemsCount: '{{count}} item(s)',
     unitWater: 'm³',
     workers: 'workers',
+    filterByPlot: 'Filter by plot', allPlots: 'All plots',
   },
+
   sync: {
     title: 'Sync',
     pending: 'Pending', synced: 'Synced', errors: 'Failed',
