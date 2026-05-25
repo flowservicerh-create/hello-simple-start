@@ -122,7 +122,7 @@ const RecentEntriesList = ({ type }: Props) => {
             <li key={i} className="h-12 rounded-xl bg-surface-high/60 animate-pulse" />
           ))}
         </ul>
-      ) : entries.length === 0 ? (
+      ) : visibleEntries.length === 0 ? (
         <p className="text-xs text-muted-foreground px-1 py-3">
           {online ? t('recent.empty') : (
             <span className="inline-flex items-center gap-1.5">
@@ -132,7 +132,8 @@ const RecentEntriesList = ({ type }: Props) => {
         </p>
       ) : (
         <ul className="space-y-1.5">
-          {entries.map((e) => {
+          {visibleEntries.map((e) => {
+
             const StatusIcon = e.status === 'synced' ? Check : e.status === 'failed' ? AlertCircle : Clock;
             const statusClass =
               e.status === 'synced'  ? 'text-[hsl(var(--accent-success,142_71%_45%))]' :
