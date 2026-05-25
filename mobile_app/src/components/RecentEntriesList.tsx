@@ -8,6 +8,7 @@
  * Per-row badge indicates synced / pending / failed so the technician can
  * tell at a glance which entries already reached the server.
  */
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Check, Clock, AlertCircle, WifiOff } from 'lucide-react';
 import { useRecentEntries, type RecentEntryView } from '@/hooks/useRecentEntries';
@@ -20,6 +21,8 @@ const RecentEntriesList = ({ type }: Props) => {
   const { t, i18n } = useTranslation();
   const { entries, loading, refreshing, refresh, online } = useRecentEntries(type);
   const { data: refs } = useReferenceData();
+  const [plotFilter, setPlotFilter] = useState<string>('all');
+
 
   const plotName = (id: unknown): string => {
     const p = refs.plots.find((pl) => pl.id === String(id));
