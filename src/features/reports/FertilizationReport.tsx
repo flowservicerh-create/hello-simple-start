@@ -249,8 +249,8 @@ const FertilizationReport = () => {
             {cumulPg.pageRows.map((row) => (
               <tr
                 key={row.plotId}
-                onClick={() => openHistory(row.plotId, row.plot)}
-                title={t('reports.clickHistory', 'Click to view operations history')}
+                onDoubleClick={() => openHistory(row.plotId, row.plot)}
+                title={t('reports.dblClickHistory', 'Double-click to view operations history')}
                 className="cursor-pointer"
               >
                 <td className="font-medium text-foreground">{row.plot}</td>
@@ -259,6 +259,7 @@ const FertilizationReport = () => {
                 <td className="font-semibold text-foreground">{row.k}</td>
               </tr>
             ))}
+
             <TableSkeletonRows
               colSpan={4}
               isLoading={!filters.filtersReady || reportQuery.isLoading || (reportQuery.isFetching && cumulRows.length === 0)}
