@@ -66,21 +66,55 @@ const RecentEntriesList = ({ type }: Props) => {
     }
   };
 
+  // Plots present in current entries (for the filter dropdown)
+  const plotOptions = useMemo(() => {
+    const map = new Map<string, string>();
+    entries.forEach((e) => {
+      const pid = (e.payload as Record<string, unknown>).plot_id;
+      if (pid == null) return;
+      const id = String(pid);
+      if (!map.has(id)) map.set(id, plotName(id));
+    });
+    return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entries, refs.plots]);
+
+  const visibleEntries = useMemo(() => {
+    if (plotFilter === 'all') return entries;
+    return entries.filter((e) => String((e.payload as Record<string, unknown>).plot_id ?? '') === plotFilter);
+  }, [entries, plotFilter]);
+
   return (
     <section className="mt-2" aria-label={t('recent.title')}>
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-2 gap-2">
         <h3 className="text-sm font-semibold text-foreground">{t('recent.title')}</h3>
-        <button
-          type="button"
-          onClick={() => void refresh()}
-          disabled={refreshing || !online}
-          className="btn-ghost h-8 px-2 flex items-center gap-1 text-xs"
-          aria-label={t('recent.refresh')}
-        >
-          <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} />
-          {online ? t('recent.refresh') : t('common.offline')}
-        </button>
+        <div className="flex items-center gap-2">
+          {plotOptions.length > 1 && (
+            <select
+              value={plotFilter}
+              onChange={(e) => setPlotFilter(e.target.value)}
+              className="cl-input h-8 rounded-lg text-xs px-2 max-w-[140px]"
+              aria-label={t('recent.filterByPlot', 'Filtrer par parcelle')}
+            >
+              <option value="all">{t('recent.allPlots', 'Toutes parcelles')}</option>
+              {plotOptions.map((p) => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+          )}
+          <button
+            type="button"
+            onClick={() => void refresh()}
+            disabled={refreshing || !online}
+            className="btn-ghost h-8 px-2 flex items-center gap-1 text-xs"
+            aria-label={t('recent.refresh')}
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} />
+            {online ? t('recent.refresh') : t('common.offline')}
+          </button>
+        </div>
       </div>
+
 
       {loading ? (
         <ul className="space-y-2">
