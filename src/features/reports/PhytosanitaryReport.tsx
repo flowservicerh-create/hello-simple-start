@@ -194,10 +194,11 @@ const PhytosanitaryReport = () => {
             {pagination.pageRows.map((row) => (
               <tr
                 key={row.id}
-                onClick={() => setEditId(row.id)}
-                title={t('reports.clickEdit', 'Click to edit')}
+                onDoubleClick={() => setEditId(row.id)}
+                title={t('reports.dblClickEdit', 'Double-click to edit')}
                 className="cursor-pointer"
               >
+
                 <td className="font-medium text-foreground whitespace-nowrap">{formatDateFr(row.operation_date)}</td>
                 <td>{row.plot_name}</td>
                 <td className="text-foreground">{row.pesticide_name}</td>
