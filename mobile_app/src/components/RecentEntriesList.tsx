@@ -8,6 +8,7 @@
  * Per-row badge indicates synced / pending / failed so the technician can
  * tell at a glance which entries already reached the server.
  */
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Check, Clock, AlertCircle, WifiOff } from 'lucide-react';
 import { useRecentEntries, type RecentEntryView } from '@/hooks/useRecentEntries';
@@ -20,6 +21,8 @@ const RecentEntriesList = ({ type }: Props) => {
   const { t, i18n } = useTranslation();
   const { entries, loading, refreshing, refresh, online } = useRecentEntries(type);
   const { data: refs } = useReferenceData();
+  const [plotFilter, setPlotFilter] = useState<string>('all');
+
 
   const plotName = (id: unknown): string => {
     const p = refs.plots.find((pl) => pl.id === String(id));
@@ -63,21 +66,55 @@ const RecentEntriesList = ({ type }: Props) => {
     }
   };
 
+  // Plots present in current entries (for the filter dropdown)
+  const plotOptions = useMemo(() => {
+    const map = new Map<string, string>();
+    entries.forEach((e) => {
+      const pid = (e.payload as Record<string, unknown>).plot_id;
+      if (pid == null) return;
+      const id = String(pid);
+      if (!map.has(id)) map.set(id, plotName(id));
+    });
+    return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entries, refs.plots]);
+
+  const visibleEntries = useMemo(() => {
+    if (plotFilter === 'all') return entries;
+    return entries.filter((e) => String((e.payload as Record<string, unknown>).plot_id ?? '') === plotFilter);
+  }, [entries, plotFilter]);
+
   return (
     <section className="mt-2" aria-label={t('recent.title')}>
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-2 gap-2">
         <h3 className="text-sm font-semibold text-foreground">{t('recent.title')}</h3>
-        <button
-          type="button"
-          onClick={() => void refresh()}
-          disabled={refreshing || !online}
-          className="btn-ghost h-8 px-2 flex items-center gap-1 text-xs"
-          aria-label={t('recent.refresh')}
-        >
-          <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} />
-          {online ? t('recent.refresh') : t('common.offline')}
-        </button>
+        <div className="flex items-center gap-2">
+          {plotOptions.length > 1 && (
+            <select
+              value={plotFilter}
+              onChange={(e) => setPlotFilter(e.target.value)}
+              className="cl-input h-8 rounded-lg text-xs px-2 max-w-[140px]"
+              aria-label={t('recent.filterByPlot', 'Filtrer par parcelle')}
+            >
+              <option value="all">{t('recent.allPlots', 'Toutes parcelles')}</option>
+              {plotOptions.map((p) => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+          )}
+          <button
+            type="button"
+            onClick={() => void refresh()}
+            disabled={refreshing || !online}
+            className="btn-ghost h-8 px-2 flex items-center gap-1 text-xs"
+            aria-label={t('recent.refresh')}
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} />
+            {online ? t('recent.refresh') : t('common.offline')}
+          </button>
+        </div>
       </div>
+
 
       {loading ? (
         <ul className="space-y-2">
@@ -85,7 +122,7 @@ const RecentEntriesList = ({ type }: Props) => {
             <li key={i} className="h-12 rounded-xl bg-surface-high/60 animate-pulse" />
           ))}
         </ul>
-      ) : entries.length === 0 ? (
+      ) : visibleEntries.length === 0 ? (
         <p className="text-xs text-muted-foreground px-1 py-3">
           {online ? t('recent.empty') : (
             <span className="inline-flex items-center gap-1.5">
@@ -95,7 +132,8 @@ const RecentEntriesList = ({ type }: Props) => {
         </p>
       ) : (
         <ul className="space-y-1.5">
-          {entries.map((e) => {
+          {visibleEntries.map((e) => {
+
             const StatusIcon = e.status === 'synced' ? Check : e.status === 'failed' ? AlertCircle : Clock;
             const statusClass =
               e.status === 'synced'  ? 'text-[hsl(var(--accent-success,142_71%_45%))]' :

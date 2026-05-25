@@ -70,7 +70,9 @@ export const fr = {
     itemsCount: '{{count}} élément(s)',
     unitWater: 'm³',
     workers: 'personnes',
+    filterByPlot: 'Filtrer par parcelle', allPlots: 'Toutes parcelles',
   },
+
   sync: {
     title: 'Synchronisation',
     pending: 'En attente', synced: 'Synchronisé', errors: 'Échecs',
