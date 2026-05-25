@@ -434,18 +434,23 @@ final class ReportController extends Controller
     }
 
     /**
-     * Effective date range = explicit user dates, falling back to the
-     * campaign's dates when present. Explicit inputs win.
+     * Effective date range for the outer WHERE.
+     *
+     * v5 fix (client: "Filtre campagne ne marche pas"): when the user
+     * selects a campaign WITHOUT explicit dates, do NOT clamp the outer
+     * query to the campaign window. The scoping is handled by
+     * applyCampaignScope() which already accepts (campaign_id = X) and,
+     * as a legacy fallback, (campaign_id IS NULL AND date in window).
+     * Clamping the outer query was excluding ops with campaign_id = X
+     * whose operation_date drifted outside the campaign window.
      *
      * @return array{0: ?string, 1: ?string}
      */
     private function effectiveRange(?object $campaign, ?string $from, ?string $to): array
     {
-        return [
-            $from ?: ($campaign->start_date ?? null),
-            $to   ?: ($campaign->end_date   ?? null),
-        ];
+        return [$from ?: null, $to ?: null];
     }
+
 
     /**
      * Scope an operation query to a campaign. We accept rows where
