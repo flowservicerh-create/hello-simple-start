@@ -194,14 +194,15 @@ const FertilizationReport = () => {
             {rows.map((row) => (
               <tr
                 key={row.plotId}
-                onClick={() => openHistory(row.plotId, row.plot, nutrient)}
-                title={t('reports.clickHistory', 'Click to view operations history')}
+                onDoubleClick={() => openHistory(row.plotId, row.plot, nutrient)}
+                title={t('reports.dblClickHistory', 'Double-click to view operations history')}
                 className="cursor-pointer"
               >
                 <td className="font-medium text-foreground">{row.plot}</td>
                 {months.map((m) => <td key={m}>{row.byMonth[m] || '—'}</td>)}
               </tr>
             ))}
+
             <TableSkeletonRows
               colSpan={Math.max(2, months.length + 1)}
               isLoading={!filters.filtersReady || reportQuery.isLoading || (reportQuery.isFetching && rows.length === 0)}
@@ -248,8 +249,8 @@ const FertilizationReport = () => {
             {cumulPg.pageRows.map((row) => (
               <tr
                 key={row.plotId}
-                onClick={() => openHistory(row.plotId, row.plot)}
-                title={t('reports.clickHistory', 'Click to view operations history')}
+                onDoubleClick={() => openHistory(row.plotId, row.plot)}
+                title={t('reports.dblClickHistory', 'Double-click to view operations history')}
                 className="cursor-pointer"
               >
                 <td className="font-medium text-foreground">{row.plot}</td>
@@ -258,6 +259,7 @@ const FertilizationReport = () => {
                 <td className="font-semibold text-foreground">{row.k}</td>
               </tr>
             ))}
+
             <TableSkeletonRows
               colSpan={4}
               isLoading={!filters.filtersReady || reportQuery.isLoading || (reportQuery.isFetching && cumulRows.length === 0)}

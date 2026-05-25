@@ -258,10 +258,11 @@ const IrrigationReport = () => {
             {pagination.pageRows.map((row) => (
               <tr
                 key={row.plotId}
-                onClick={() => openHistory(row.plotId, row.plot)}
-                title={t('reports.clickHistory', 'Click to view operations history')}
+                onDoubleClick={() => openHistory(row.plotId, row.plot)}
+                title={t('reports.dblClickHistory', 'Double-click to view operations history')}
                 className="cursor-pointer"
               >
+
                 <td className="font-medium text-foreground">{row.plot}</td>
                 <td className="font-semibold text-foreground">{row.total.toLocaleString()}</td>
                 <td>{row.perHa}</td>
