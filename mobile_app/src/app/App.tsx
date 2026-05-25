@@ -2,8 +2,9 @@ import { lazy, Suspense, useEffect } from 'react';
 import { IonApp, IonSpinner, setupIonicReact } from '@ionic/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, HashRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
-const Router: React.ComponentType<{ children?: React.ReactNode }> =
+const Router: React.ComponentType<{ children?: React.ReactNode; basename?: string }> =
   import.meta.env.VITE_USE_HASH_ROUTER === 'true' ? HashRouter : BrowserRouter;
+
 
 /* Ionic core CSS — required */
 import '@ionic/react/css/core.css';
@@ -77,7 +78,7 @@ const App = () => (
   <ThemeProvider>
     <QueryClientProvider client={queryClient}>
       <IonApp>
-        <Router>
+        <Router basename={import.meta.env.BASE_URL.replace(/\/$/, '')}>
           <Bootstrapper />
           <Suspense fallback={<RouteFallback />}>
             <Routes>
