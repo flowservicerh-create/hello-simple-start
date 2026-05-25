@@ -250,8 +250,9 @@ const IrrigationReport = () => {
           <thead>
             <tr>
               <th>{t('table.plot', 'Plot')}</th>
-              <th>m³/parcelle</th>
-              <th>m³/ha</th>
+              <th className="!normal-case">m³/parcelle</th>
+              <th className="!normal-case">m³/ha</th>
+
             </tr>
           </thead>
           <tbody>
