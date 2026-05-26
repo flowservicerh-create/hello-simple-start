@@ -51,11 +51,37 @@ function pickCurrentCampaign<T extends { start_date: string; end_date: string; i
   );
 }
 
+const PLOT_STORAGE_KEY = 'agrisync.reports.plotId';
+
+function readStoredPlotId(fallback: string): string {
+  if (typeof window === 'undefined') return fallback;
+  try {
+    const v = window.localStorage.getItem(PLOT_STORAGE_KEY);
+    return v && v.length > 0 ? v : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function writeStoredPlotId(value: string) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(PLOT_STORAGE_KEY, value);
+  } catch {
+    /* ignore quota / privacy mode */
+  }
+}
+
 export function useReportFilters({
   initialPlotId = 'all',
   defaultActiveCampaign = true,
 }: Options = {}): ReportFiltersState {
-  const [plotId, setPlotId] = useState(initialPlotId);
+  // Persist plot selection so it survives screen changes / back navigation.
+  const [plotId, setPlotIdState] = useState(() => readStoredPlotId(initialPlotId));
+  const setPlotId = (id: string) => {
+    setPlotIdState(id);
+    writeStoredPlotId(id);
+  };
   const [campaignId, setCampaignId] = useState<string>(CAMPAIGN_ALL);
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
